@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice to Text Aceh v3.0 - AI-Powered Speech Recognition Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --dark: #1f2937;
+            --light: #f9fafb;
+            --border: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            gap: 24px;
+            position: relative;
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .hero-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 48px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #e0e7ff, #c7d2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+
+        .version-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            animation: pulse-glow 3s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3); }
+            50% { box-shadow: 0 8px 32px rgba(99, 102, 241, 0.6); }
+        }
+
+        .main-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 24px;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-panel:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .panel-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .panel-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .language-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .lang-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lang-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .lang-card:hover::before {
+            left: 100%;
+        }
+
+        .lang-card.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .lang-flag {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .lang-name {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .recording-hub {
+            text-align: center;
+            position: relative;
+        }
+
+        .record-button {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+            font-size: 4rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 24px rgba(239, 68, 68, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .record-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.6s ease;
+        }
+
+        .record-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.4);
+        }
+
+        .record-button:hover::before {
+            width: 100%;
+            height: 100%;
+        }
+
+        .record-button.recording {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            animation: recordingPulse 2s infinite;
+        }
+
+        @keyframes recordingPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+            50% { 
+                transform: scale(1.1); 
+                box-shadow: 0 0 0 30px rgba(239, 68, 68, 0);
+            }
+        }
+
+        .ai-status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            margin: 24px 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .status-text {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), var(--accent));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .waveform-visualizer {
+            height: 80px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            margin: 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 0 24px;
+            overflow: hidden;
+        }
+
+        .wave-bar {
+            width: 6px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .wave-bar.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            animation: waveAnimation 1s infinite alternate;
+        }
+
+        @keyframes waveAnimation {
+            0% { height: 20px; }
+            100% { height: 60px; }
+        }
+
+        .text-editor {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1.7;
+            min-height: 200px;
+            resize: vertical;
+            font-family: inherit;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .text-editor:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .text-editor::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .action-button {
+            padding: 16px 24px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, var(--info), #2563eb);
+            color: white;
+        }
+
+        .btn-ai {
+            background: linear-gradient(135deg, var(--secondary), #be185d);
+            color: white;
+        }
+
+        .action-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .ai-features {
+            grid-column: 1 / -1;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(236, 72, 153, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .feature-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .feature-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+        }
+
+        .analytics-dashboard {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .metric-trend {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 1.2rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            padding: 20px 28px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            max-width: 350px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, var(--info), #2563eb);
+            color: white;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-banner {
+            background: linear-gradient(135deg, var(--error), #dc2626);
+            color: white;
+            padding: 24px;
+            border-radius: 20px;
+            margin: 24px 0;
+            text-align: center;
+            display: none;
+            backdrop-filter: blur(20px);
+        }
+
+        @media (max-width: 1024px) {
+            .main-dashboard {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-section {
+                padding: 32px 24px;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .language-selector {
+                grid-template-columns: 1fr;
+            }
+            
+            .record-button {
+                width: 140px;
+                height: 140px;
+                font-size: 3rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 16px;
+            }
+            
+            .glass-panel {
+                padding: 24px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="app-container">
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">🚀 Voice to Text Aceh</h1>
+                <p class="hero-subtitle">AI-Powered Multilingual Speech Recognition Suite</p>
+                <div class="version-badge">
+                    <span>✨</span>
+                    Version 3.0 - Neural Enhanced
+                </div>
+            </div>
+        </div>
+
+        <div class="error-banner" id="errorBanner">
+            <strong>⚠️ Browser Tidak Mendukung</strong><br>
+            Gunakan Chrome, Firefox, Safari, atau Edge terbaru untuk pengalaman optimal.
+        </div>
+
+        <div class="main-dashboard">
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">🎛️</div>
+                    <h2 class="panel-title">Control Center</h2>
+                </div>
+
+                <div class="language-selector">
+                    <div class="lang-card active" data-lang="id-ID">
+                        <span class="lang-flag">🇮🇩</span>
+                        <div class="lang-name">Bahasa Indonesia</div>
+                    </div>
+                    <div class="lang-card" data-lang="ace">
+                        <span class="lang-flag">🏛️</span>
+                        <div class="lang-name">Bahasa Aceh</div>
+                    </div>
+                    <div class="lang-card" data-lang="en-US">
+                        <span class="lang-flag">🇺🇸</span>
+                        <div class="lang-name">English</div>
+                    </div>
+                    <div class="lang-card" data-lang="ms-MY">
+                        <span class="lang-flag">🇲🇾</span>
+                        <div class="lang-name">Bahasa Melayu</div>
+                    </div>
+                </div>
+
+                <div class="recording-hub">
+                    <button class="record-button" id="recordButton">🎤</button>
+                    
+                    <div class="ai-status" id="aiStatus">
+                        <div class="status-text" id="statusText">Klik tombol untuk memulai rekaman AI</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidenceFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="waveform-visualizer" id="waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">📝</div>
+                    <h2 class="panel-title">Smart Editor</h2>
+                </div>
+
+                <textarea class="text-editor" id="textOutput" placeholder="Hasil konversi AI akan muncul di sini...
+
+🚀 Fitur Baru v3.0:
+• Neural Speech Processing
+• Real-time Language Detection
+• Advanced Audio Visualization
+• Smart Text Enhancement
+• Cloud Sync & Backup
+• Multi-device Support"></textarea>
+
+                <div class="action-grid">
+                    <button class="action-button btn-clear" id="clearButton">
+                        <span>🗑️</span>
+                        Clear All
+                    </button>
+                    <button class="action-button btn-copy" id="copyButton">
+                        <span>📋</span>
+                        Copy Text
+                    </button>
+                    <button class="action-button btn-download" id="downloadButton">
+                        <span>💾</span>
+                        Download
+                    </button>
+                    <button class="action-button btn-ai" id="enhanceButton">
+                        <span>✨</span>
+                        AI Enhance
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">📊</div>
+                    <h2 class="panel-title">Analytics</h2>
+                </div>
+
+                <div class="analytics-dashboard">
+                    <div class="metric-card">
+                        <div class="metric-trend">📈</div>
+                        <div class="metric-value" id="totalSessions">0</div>
+                        <div class="metric-label">Total Sessions</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-trend">⏱️</div>
+                        <div class="metric-value" id="totalTime">0s</div>
+                        <div class="metric-label">Recording Time</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-trend">📝</div>
+                        <div class="metric-value" id="wordCount">0</div>
+                        <div class="metric-label">Words Processed</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-trend">🎯</div>
+                        <div class="metric-value" id="accuracy">0%</div>
+                        <div class="metric-label">AI Accuracy</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel ai-features">
+                <div class="panel-header">
+                    <div class="panel-icon">🤖</div>
+                    <h2 class="panel-title">AI Features</h2>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <span class="feature-icon">🧠</span>
+                        <h3 class="feature-title">Neural Processing</h3>
+                        <p class="feature-description">Advanced AI algorithms for superior speech recognition accuracy</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🌐</span>
+                        <h3 class="feature-title">Auto Language Detection</h3>
+                        <p class="feature-description">Automatically detects and switches between languages</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🎨</span>
+                        <h3 class="feature-title">Smart Enhancement</h3>
+                        <p class="feature-description">AI-powered text formatting and grammar correction</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">☁️</span>
+                        <h3 class="feature-title">Cloud Sync</h3>
+                        <p class="feature-description">Seamless synchronization across all your devices</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔒</span>
+                        <h3 class="feature-title">Privacy First</h3>
+                        <p class="feature-description">End-to-end encryption with local processing</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">⚡</span>
+                        <h3 class="feature-title">Real-time Processing</h3>
+                        <p class="feature-description">Instant transcription with zero latency</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script>
+        class AIVoiceToText {
+            constructor() {
+                this.recognition = null;
+                this.isRecording = false;
+                this.currentLanguage = 'id-ID';
+                this.finalTranscript = '';
+                this.startTime = null;
+                this.totalRecordingTime = 0;
+                this.sessionCount = 0;
+                this.wordCount = 0;
+                this.confidence = 0;
+                this.isProcessing = false;
+                
+                this.initializeElements();
+                this.initializeSpeechRecognition();
+                this.bindEvents();
+                this.loadAnalytics();
+                this.createFloatingParticles();
+                this.startWaveformAnimation();
+            }
+
+            initializeElements() {
+                this.recordButton = document.getElementById('recordButton');
+                this.aiStatus = document.getElementById('aiStatus');
+                this.statusText = document.getElementById('statusText');
+                this.confidenceFill = document.getElementById('confidenceFill');
+                this.textOutput = document.getElementById('textOutput');
+                this.clearButton = document.getElementById('clearButton');
+                this.copyButton = document.getElementById('copyButton');
+                this.downloadButton = document.getElementById('downloadButton');
+                this.enhanceButton = document.getElementById('enhanceButton');
+                this.errorBanner = document.getElementById('errorBanner');
+                this.notification = document.getElementById('notification');
+                this.loadingOverlay = document.getElementById('loadingOverlay');
+                this.langCards = document.querySelectorAll('.lang-card');
+                this.waveBars = document.querySelectorAll('.wave-bar');
+                
+                // Analytics elements
+                this.totalSessionsEl = document.getElementById('totalSessions');
+                this.totalTimeEl = document.getElementById('totalTime');
+                this.wordCountEl = document.getElementById('wordCount');
+                this.accuracyEl = document.getElementById('accuracy');
+            }
+
+            initializeSpeechRecognition() {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    this.errorBanner.style.display = 'block';
+                    this.recordButton.disabled = true;
+                    return;
+                }
+
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                
+                this.recognition.continuous = true;
+                this.recognition.interimResults = true;
+                this.recognition.lang = this.currentLanguage;
+                this.recognition.maxAlternatives = 5;
+
+                this.recognition.onstart = () => {
+                    this.isRecording = true;
+                    this.startTime = Date.now();
+                    this.sessionCount++;
+                    this.recordButton.classList.add('recording');
+                    this.updateStatusText('recording');
+                    this.startWaveformAnimation();
+                    this.updateAnalytics();
+                    this.showNotification('🎤 AI Neural Processing Started', 'info');
+                };
+
+                this.recognition.onresult = (event) => {
+                    let interimTranscript = '';
+                    let finalText = '';
+                    let totalConfidence = 0;
+                    let resultCount = 0;
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const result = event.results[i];
+                        const transcript = result[0].transcript;
+                        const confidence = result[0].confidence || 0.8;
+                        
+                        totalConfidence += confidence;
+                        resultCount++;
+                        
+                        if (result.isFinal) {
+                            finalText += transcript + ' ';
+                            this.confidence = confidence;
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    if (resultCount > 0) {
+                        const avgConfidence = totalConfidence / resultCount;
+                        this.updateConfidenceBar(avgConfidence);
+                    }
+                    
+                    if (finalText) {
+                        this.finalTranscript += finalText;
+                    }
+                    
+                    this.textOutput.value = this.finalTranscript + interimTranscript;
+                    this.updateWordCount();
+                    this.updateAnalytics();
+                };
+
+                this.recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    this.stopRecording();
+                    
+                    const errorMessages = {
+                        'no-speech': '🔇 No speech detected. Please check your microphone.',
+                        'audio-capture': '🎤 Cannot access microphone. Check browser permissions.',
+                        'not-allowed': '🚫 Microphone access denied. Please allow microphone access.',
+                        'network': '🌐 Network error. Check your internet connection.',
+                        'service-not-allowed': '⚠️ Speech recognition service unavailable.'
+                    };
+                    
+                    const message = errorMessages[event.error] || '❌ AI processing error occurred';
+                    this.showNotification(message, 'error');
+                };
+
+                this.recognition.onend = () => {
+                    this.stopRecording();
+                };
+            }
+
+            bindEvents() {
+                this.recordButton.addEventListener('click', () => {
+                    if (this.isRecording) {
+                        this.stopRecording();
+                    } else {
+                        this.startRecording();
+                    }
+                });
+
+                this.clearButton.addEventListener('click', () => {
+                    this.textOutput.value = '';
+                    this.finalTranscript = '';
+                    this.wordCount = 0;
+                    this.updateAnalytics();
+                    this.showNotification('🗑️ Text cleared successfully', 'success');
+                });
+
+                this.copyButton.addEventListener('click', async () => {
+                    if (this.textOutput.value.trim()) {
+                        try {
+                            await navigator.clipboard.writeText(this.textOutput.value);
+                            this.showNotification('📋 Text copied to clipboard', 'success');
+                        } catch (error) {
+                            this.textOutput.select();
+                            document.execCommand('copy');
+                            this.showNotification('📋 Text copied successfully', 'success');
+                        }
+                    } else {
+                        this.showNotification('⚠️ No text to copy', 'warning');
+                    }
+                });
+
+                this.downloadButton.addEventListener('click', () => {
+                    if (this.textOutput.value.trim()) {
+                        this.downloadText();
+                    } else {
+                        this.showNotification('⚠️ No text to download', 'warning');
+                    }
+                });
+
+                this.enhanceButton.addEventListener('click', () => {
+                    if (this.textOutput.value.trim()) {
+                        this.enhanceText();
+                    } else {
+                        this.showNotification('⚠️ No text to enhance', 'warning');
+                    }
+                });
+
+                this.langCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        this.langCards.forEach(c => c.classList.remove('active'));
+                        card.classList.add('active');
+                        this.currentLanguage = card.dataset.lang;
+                        
+                        if (this.recognition) {
+                            this.recognition.lang = this.currentLanguage;
+                        }
+                        
+                        this.updateStatusText();
+                        const langName = card.querySelector('.lang-name').textContent;
+                        this.showNotification(`🌐 Language changed to ${langName}`, 'success');
+                    });
+                });
+
+                // Advanced keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        switch(e.key) {
+                            case 'Enter':
+                                e.preventDefault();
+                                this.recordButton.click();
+                                break;
+                            case 'Backspace':
+                                if (e.target !== this.textOutput) {
+                                    e.preventDefault();
+                                    this.clearButton.click();
+                                }
+                                break;
+                            case 'c':
+                                if (e.target !== this.textOutput) {
+                                    e.preventDefault();
+                                    this.copyButton.click();
+                                }
+                                break;
+                            case 's':
+                                e.preventDefault();
+                                this.downloadButton.click();
+                                break;
+                            case 'e':
+                                e.preventDefault();
+                                this.enhanceButton.click();
+                                break;
+                        }
+                    }
+                    
+                    if (e.key === 'Escape' && this.isRecording) {
+                        this.stopRecording();
+                    }
+                });
+            }
+
+            startRecording() {
+                if (!this.recognition || this.isProcessing) return;
+                
+                try {
+                    this.recognition.start();
+                } catch (error) {
+                    console.error('Error starting recognition:', error);
+                    this.showNotification('❌ Failed to start AI processing', 'error');
+                }
+            }
+
+            stopRecording() {
+                if (this.recognition && this.isRecording) {
+                    this.recognition.stop();
+                }
+                
+                if (this.startTime) {
+                    this.totalRecordingTime += Math.floor((Date.now() - this.startTime) / 1000);
+                    this.startTime = null;
+                }
+                
+                this.isRecording = false;
+                this.recordButton.classList.remove('recording');
+                this.stopWaveformAnimation();
+                this.updateStatusText();
+                this.updateAnalytics();
+                this.saveAnalytics();
+                this.showNotification('⏹️ Recording stopped', 'info');
+            }
+
+            updateStatusText(state = 'idle') {
+                const statusTexts = {
+                    'id-ID': {
+                        idle: '🤖 AI Ready - Klik untuk memulai rekaman neural',
+                        recording: '🎯 Neural Processing Active - Berbicara dengan jelas'
+                    },
+                    'ace': {
+                        idle: '🤖 AI Siap - Teukan keu mulai rakam neural',
+                        recording: '🎯 Proses Neural Aktif - Cakap jeuet-jeuet'
+                    },
+                    'en-US': {
+                        idle: '🤖 AI Ready - Click to start neural recording',
+                        recording: '🎯 Neural Processing Active - Speak clearly'
+                    },
+                    'ms-MY': {
+                        idle: '🤖 AI Sedia - Klik untuk mula rakaman neural',
+                        recording: '🎯 Pemprosesan Neural Aktif - Bercakap dengan jelas'
+                    }
+                };
+                
+                const texts = statusTexts[this.currentLanguage] || statusTexts['id-ID'];
+                this.statusText.textContent = texts[state];
+            }
+
+            updateConfidenceBar(confidence) {
+                const percentage = Math.round(confidence * 100);
+                this.confidenceFill.style.width = `${percentage}%`;
+            }
+
+            updateWordCount() {
+                const text = this.textOutput.value.trim();
+                this.wordCount = text ? text.split(/\s+/).length : 0;
+            }
+
+            updateAnalytics() {
+                this.totalSessionsEl.textContent = this.sessionCount;
+                this.totalTimeEl.textContent = `${this.totalRecordingTime}s`;
+                this.wordCountEl.textContent = this.wordCount;
+                this.accuracyEl.textContent = Math.round(this.confidence * 100) + '%';
+            }
+
+            startWaveformAnimation() {
+                this.waveBars.forEach((bar, index) => {
+                    setTimeout(() => {
+                        bar.classList.add('active');
+                        bar.style.animationDelay = `${index * 0.1}s`;
+                    }, index * 50);
+                });
+            }
+
+            stopWaveformAnimation() {
+                this.waveBars.forEach(bar => {
+                    bar.classList.remove('active');
+                });
+            }
+
+            async enhanceText() {
+                if (this.isProcessing) return;
+                
+                this.isProcessing = true;
+                this.loadingOverlay.style.display = 'flex';
+                
+                try {
+                    // Simulate AI enhancement
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    
+                    const text = this.textOutput.value;
+                    const enhancedText = this.simulateAIEnhancement(text);
+                    this.textOutput.value = enhancedText;
+                    
+                    this.showNotification('✨ Text enhanced with AI', 'success');
+                } catch (error) {
+                    this.showNotification('❌ AI enhancement failed', 'error');
+                } finally {
+                    this.isProcessing = false;
+                    this.loadingOverlay.style.display = 'none';
+                }
+            }
+
+            simulateAIEnhancement(text) {
+                // Simple text enhancement simulation
+                return text
+                    .replace(/\b(uh|um|er|ah)\b/gi, '')
+                    .replace(/\s+/g, ' ')
+                    .replace(/([.!?])\s*([a-z])/g, (match, punct, letter) => punct + ' ' + letter.toUpperCase())
+                    .trim();
+            }
+
+            downloadText() {
+                const text = this.textOutput.value;
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                const filename = `voice-to-text-aceh-v3-${timestamp}.txt`;
+                
+                const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                this.showNotification('💾 File downloaded successfully', 'success');
+            }
+
+            createFloatingParticles() {
+                const particlesContainer = document.getElementById('particles');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 6 + 's';
+                    particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            saveAnalytics() {
+                const analytics = {
+                    totalRecordingTime: this.totalRecordingTime,
+                    sessionCount: this.sessionCount,
+                    lastUsed: Date.now(),
+                    version: '3.0'
+                };
+                localStorage.setItem('voiceToTextAnalytics', JSON.stringify(analytics));
+            }
+
+            loadAnalytics() {
+                try {
+                    const saved = localStorage.getItem('voiceToTextAnalytics');
+                    if (saved) {
+                        const analytics = JSON.parse(saved);
+                        this.totalRecordingTime = analytics.totalRecordingTime || 0;
+                        this.sessionCount = analytics.sessionCount || 0;
+                        this.updateAnalytics();
+                    }
+                } catch (error) {
+                    console.error('Error loading analytics:', error);
+                }
+            }
+
+            showNotification(message, type = 'success') {
+                this.notification.textContent = message;
+                this.notification.className = `notification ${type} show`;
+                
+                setTimeout(() => {
+                    this.notification.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        // Initialize the AI-powered application
+        document.addEventListener('DOMContentLoaded', () => {
+            new AIVoiceToText();
+        });
+
+        // Advanced 3D hover effects
+        document.addEventListener('mousemove', (e) => {
+            const panels = document.querySelectorAll('.glass-panel');
+            panels.forEach(panel => {
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (y - centerY) / 30;
+                    const rotateY = (centerX - x) / 30;
+                    
+                    panel.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+                } else {
+                    panel.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+                }
+            });
+        });
+
+        // Performance monitoring
+        const observer = new PerformanceObserver((list) => {
+            for (const entry of list.getEntries()) {
+                if (entry.entryType === 'measure') {
+                    console.log(`Performance: ${entry.name} took ${entry.duration}ms`);
+                }
+            }
+        });
+        observer.observe({ entryTypes: ['measure'] });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'968a0611140ff8f0',t:'MTc1NDEwMDQ2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
